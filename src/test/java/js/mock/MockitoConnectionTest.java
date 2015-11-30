@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package js.mock;
 
@@ -22,190 +22,191 @@ import org.mockito.Spy;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
- * @author <a href="mailto:Alekseychenko.Vladimir@t-systems.ru">Alekseychenko.Vladimir</a>
- *
+ * @author <a href="mailto:Alexeychenko.Vladimir@t-systems.ru">Alexeychenko.Vladimir</a>
  */
 public class MockitoConnectionTest {
 
-	@Mock
-	private Connection mockConnection;
+    @Mock
+    private Connection mockConnection;
 
-	@Spy
-	private Connection spyConnection;
+    @Spy
+    private Connection spyConnection;
 
-	@Rule
-	public ExpectedException exception = ExpectedException.none();
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
-	@Rule
-	public Timeout globalTimeout = new Timeout(5000);
+    @Rule
+    public Timeout globalTimeout = new Timeout(5, TimeUnit.SECONDS);
 
-	@Rule
-	public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
-	@Before
-	public void init(){
-		MockitoAnnotations.initMocks(this);
-	}
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+    }
 
-	@Test
-	public void mockCreation(){
-		Connection connection = Mockito.mock(Connection.class);
-	}
-	
-	
-	@Test
-	public void spyCreation(){
-		Connection connection = Mockito.spy(new Connection());
-	}
-
-	@Test
-	public void testUsingTempFolder() throws IOException {
-
-		File createdFolder = folder.newFolder("newfolder");
-		File createdFile = folder.newFile("myfilefile.txt");
-
-		System.out.println(createdFolder.getAbsolutePath());
-		System.out.println(createdFile.getAbsolutePath());
-
-		Assert.assertTrue(createdFile.exists());
-	}
-
-	@Test
-	@Ignore("Test was ignored because it's fail demonstration")
-	public void testGlobalTimeout() throws IOException, InterruptedException {
-
-		startCounter();
-	}
-
-	@Test(timeout = 2000)
-	@Ignore("Test was ignored because it's fail demonstration")
-	public void testLocalTimeout() throws IOException, InterruptedException {
-
-		startCounter();
-	}
-
-	private void startCounter() throws InterruptedException {
-		long counter = 0;
-		long frame = 1000;
-
-		while (true) {
-			Thread.currentThread().sleep(frame);
-			counter += frame;
-			System.out.println("time: " + counter);
-		}
-	}
+    @Test
+    public void mockCreation() {
+        Connection connection = Mockito.mock(Connection.class);
+    }
 
 
-	@Test
-	public void verifyPresentation(){
+    @Test
+    public void spyCreation() {
+        Connection connection = Mockito.spy(new Connection());
+    }
 
-		mockConnection.closeConnection();
-		mockConnection.closeConnection();
-		
-		Mockito.verify(mockConnection, Mockito.atLeastOnce()).closeConnection();
-		Mockito.verify(mockConnection, Mockito.times(2)).closeConnection();
-		Mockito.verify(mockConnection, Mockito.never()).isActive();
-		
-		Mockito.reset(mockConnection);
+    @Test
+    public void testUsingTempFolder() throws IOException {
 
-		mockConnection.isActive();
-		mockConnection.isActive();
-		mockConnection.isActive();
-		
-		Mockito.verify(mockConnection, Mockito.never()).closeConnection();
-		Mockito.verify(mockConnection, Mockito.atMost(5)).isActive();
-		
-	}
+        File createdFolder = folder.newFolder("newfolder");
+        File createdFile = folder.newFile("myfilefile.txt");
 
-	@Test
-	public void preconditionsPresentation(){
+        System.out.println(createdFolder.getAbsolutePath());
+        System.out.println(createdFile.getAbsolutePath());
 
-		Mockito.when(mockConnection.isActive()).thenReturn(true);
-		mockConnection.setActive(false);
+        Assert.assertTrue(createdFile.exists());
+    }
 
-		Assert.assertEquals(true, mockConnection.isActive());
+    @Test
+    @Ignore("Test was ignored because it's fail demonstration")
+    public void testGlobalTimeout() throws IOException, InterruptedException {
 
-	}
+        startCounter();
+    }
 
-	@Test (expected = IllegalArgumentException.class)
-	public void preconditionsExceptionPresentation(){
+    @Test(timeout = 2000)
+    @Ignore("Test was ignored because it's fail demonstration")
+    public void testLocalTimeout() throws IOException, InterruptedException {
 
-		Mockito.when(mockConnection.isActive()).thenThrow(new IllegalArgumentException("Some info"));
+        startCounter();
+    }
 
-		mockConnection.isActive();
+    private void startCounter() throws InterruptedException {
+        long counter = 0;
+        long frame = 1000;
 
-	}
+        while (true) {
+            Thread.currentThread().sleep(frame);
+            counter += frame;
+            System.out.println("time: " + counter);
+        }
+    }
 
-	@Test
-	public void preconditionsExceptionPresentation_viaRule(){
 
-		String errorMessage = "Some info";
-		Mockito.when(mockConnection.isActive()).thenThrow(new IllegalArgumentException(errorMessage));
+    @Test
+    public void verifyPresentation() {
 
-		exception.expect(IllegalArgumentException.class);
-		exception.expectMessage(errorMessage);
+        mockConnection.closeConnection();
+        mockConnection.closeConnection();
 
-		mockConnection.isActive();
+        Mockito.verify(mockConnection, Mockito.atLeastOnce()).closeConnection();
+        Mockito.verify(mockConnection, Mockito.times(2)).closeConnection();
+        Mockito.verify(mockConnection, Mockito.never()).isActive();
 
-	}
+        Mockito.reset(mockConnection);
 
-	@Test
-	public void spyPresentation(){
-		
-		spyConnection.setActive(true);
-		Assert.assertEquals(true, spyConnection.isActive());
+        mockConnection.isActive();
+        mockConnection.isActive();
+        mockConnection.isActive();
 
-		spyConnection.setActive(false);
-		Assert.assertEquals(false, spyConnection.isActive());
-		
-		Mockito.doNothing().when(spyConnection).setActive(Mockito.anyBoolean());
+        Mockito.verify(mockConnection, Mockito.never()).closeConnection();
+        Mockito.verify(mockConnection, Mockito.atMost(5)).isActive();
 
-		spyConnection.setActive(true);
-		Assert.assertEquals(false, spyConnection.isActive());
-		
-		
-		Mockito.reset(spyConnection);
-		
-		Mockito.when(spyConnection.isActive()).thenReturn(true);
+    }
 
-		spyConnection.setActive(false);
+    @Test
+    public void preconditionsPresentation() {
 
-		Assert.assertEquals(true, spyConnection.isActive());
-		Assert.assertEquals(false, spyConnection.getRealConnectionState());
-		
-		
-	}
-	
-	
-	@Test
-	public void inOrderPresentation(){
+        Mockito.when(mockConnection.isActive()).thenReturn(true);
+        mockConnection.setActive(false);
 
-		InOrder inOrder = Mockito.inOrder(mockConnection);
+        Assert.assertEquals(true, mockConnection.isActive());
 
-		mockConnection.isActive();
-		mockConnection.getRealConnectionState();
-		mockConnection.isActive();
+    }
 
-//		inOrder.verify(mockConnection).getRealConnectionState();
-		inOrder.verify(mockConnection).isActive();
-		inOrder.verify(mockConnection).isActive();
+    @Test(expected = IllegalArgumentException.class)
+    public void preconditionsExceptionPresentation() {
 
-	}
+        Mockito.when(mockConnection.isActive()).thenThrow(new IllegalArgumentException("Some info"));
 
-	@Test
-	public void servicePresentation() throws Exception{
+        mockConnection.isActive();
 
-		Integer wrongValue = 100500;
+    }
 
-		Mockito.when(mockConnection.isActive()).thenReturn(true);
+    @Test
+    public void preconditionsExceptionPresentation_viaRule() {
 
-		Calculator calculator = Mockito.mock(Calculator.class);
-		Mockito.when(calculator.maxValue(Mockito.anyInt(), Mockito.anyInt())).thenReturn(wrongValue);
+        String errorMessage = "Some info";
+        Mockito.when(mockConnection.isActive()).thenThrow(new IllegalArgumentException(errorMessage));
 
-		ComputeService service = new ComputeService(calculator, mockConnection);
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage(errorMessage);
 
-		Assert.assertEquals(wrongValue, service.computeMaxValue(1, 2));
-	}
+        mockConnection.isActive();
+
+    }
+
+    @Test
+    public void spyPresentation() {
+
+        spyConnection.setActive(true);
+        Assert.assertEquals(true, spyConnection.isActive());
+
+        spyConnection.setActive(false);
+        Assert.assertEquals(false, spyConnection.isActive());
+
+        Mockito.doNothing().when(spyConnection).setActive(Mockito.anyBoolean());
+
+        spyConnection.setActive(true);
+        Assert.assertEquals(false, spyConnection.isActive());
+
+
+        Mockito.reset(spyConnection);
+
+        Mockito.when(spyConnection.isActive()).thenReturn(true);
+
+        spyConnection.setActive(false);
+
+        Assert.assertEquals(true, spyConnection.isActive());
+        Assert.assertEquals(false, spyConnection.getRealConnectionState());
+
+
+    }
+
+
+    @Test
+    public void inOrderPresentation() {
+
+        InOrder inOrder = Mockito.inOrder(mockConnection);
+
+        mockConnection.isActive();
+        mockConnection.getRealConnectionState();
+        mockConnection.isActive();
+
+        inOrder.verify(mockConnection).isActive();
+        inOrder.verify(mockConnection).getRealConnectionState();
+        inOrder.verify(mockConnection).isActive();
+
+    }
+
+    @Test
+    public void servicePresentation() throws Exception {
+
+        Integer wrongValue = 100500;
+
+        Mockito.when(mockConnection.isActive()).thenReturn(true);
+
+        Calculator calculator = Mockito.mock(Calculator.class);
+        Mockito.when(calculator.maxValue(Mockito.anyInt(), Mockito.anyInt())).thenReturn(wrongValue);
+
+        ComputeService service = new ComputeService(calculator, mockConnection);
+
+        Assert.assertEquals(wrongValue, service.computeMaxValue(1, 2));
+    }
+
 }

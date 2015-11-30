@@ -14,7 +14,7 @@ import org.powermock.reflect.Whitebox;
 import org.testng.Assert;
 
 /**
- * @author <a href="mailto:Alekseychenko.Vladimir@t-systems.ru">Alekseychenko.Vladimir</a>
+ * @author <a href="mailto:Alexeychenko.Vladimir@t-systems.ru">Alexeychenko.Vladimir</a>
  *
  */
 @RunWith(PowerMockRunner.class)
