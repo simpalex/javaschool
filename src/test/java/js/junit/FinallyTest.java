@@ -44,11 +44,6 @@ public class FinallyTest {
         compareWithFinallyValue(result);
     }
 
-    private void compareWithFinallyValue(int result) {
-        System.out.println("Result: " + result);
-        Assert.assertEquals(FINALLY_RETURN, result);
-    }
-
     private <T extends Throwable> int testMethod(boolean exceptionNeeded, T exception) {
         try {
             if (exceptionNeeded) {
@@ -64,8 +59,21 @@ public class FinallyTest {
         }
     }
 
+    private void compareWithFinallyValue(int result) {
+        System.out.println("Result: " + result);
+        Assert.assertEquals(FINALLY_RETURN, result);
+    }
+
     private void printException(PrintStream stream, IllegalArgumentException e) {
-        String report = MessageFormat.format("Caught: {0}. Message: {1}", e.getClass().getCanonicalName(), e.getMessage());
+        String report = MessageFormat.format("Caught: {0}. Message: {1}. StackTrace: {2}", e.getClass().getCanonicalName(), e.getMessage(), getStackTraceInfo());
         stream.println(report);
+    }
+
+    private String getStackTraceInfo() {
+        StackTraceElement[] stackTrace = new Exception().getStackTrace();
+        StackTraceElement targetFrame = stackTrace[2];
+
+        return MessageFormat.format("[File: {0}; Class: {1}; Method->Line {2}->{3}]",
+                targetFrame.getFileName(), targetFrame.getClassName(), targetFrame.getMethodName(), targetFrame.getLineNumber());
     }
 }
